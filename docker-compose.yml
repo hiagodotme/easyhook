@@ -1,0 +1,31 @@
+version: '3.5'
+
+services:
+
+  easyhook:
+    container_name: 'easyhook'
+    image: node:12.14.0
+    volumes:
+      - "./easyhook:/nodejs"
+    working_dir: /nodejs
+    entrypoint: "npm start"
+    restart: always
+    ports:
+      - 3000:3000
+    depends_on:
+      - rabbitmq
+    environment:
+      TZ: America/Sao_Paulo
+
+
+  rabbitmq:
+    build:
+      context: ./
+      dockerfile: .Dockerfile
+    container_name: 'rabbitmq'
+    ports:
+      - 5672:5672
+      - 15672:15672
+    volumes:
+      - ./rabbitmq/data/:/var/lib/rabbitmq/
+      # - ./rabbitmq/log/:/var/log/rabbitmq

@@ -1,0 +1,12 @@
+POST http://localhost:3000/webhook HTTP/1.1
+Content-Type: application/json
+
+{
+    "tx_url": "https://easyhook-test-catcher.requestcatcher.com/",
+    "payload": {
+        "event_type": "MY_EVENT_NAME"
+    },
+    "headers": {
+        "CustomHeader": "CustomHeaderValue"
+    }
+}
