@@ -5,5 +5,6 @@ module.exports = {
     RABBITMQ_HOST,
     RABBITMQ_USER,
     RABBITMQ_PASS,
-    RABBITMQ_PORT
+    RABBITMQ_PORT,
+    SHOW_LOG
 } = process.env;
