@@ -22,6 +22,8 @@ queue.connect((conn) => {
             ch.sendToQueue(config.WEBHOOK_QUEUE_NAME, Buffer.from(JSON.stringify(payload)), {
                 persistent: true
             });
+
+            res.send({ok: true});
         });
 
         app.listen(3000, () => console.log('Your EasyHook server is avaiable on 0.0.0.0:3000'))
