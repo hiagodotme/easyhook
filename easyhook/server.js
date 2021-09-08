@@ -7,10 +7,11 @@ const queue = require('./queue'),
 
 queue.connect((conn) => {
     queue.channel(conn, (ch) => {
-        // inicializando o consumer do webhook
+
+        // booting the webhook consumer
         queue.consumeWebhook(ch);
 
-        // códigos do express
+        // creating endpoint to request webhooks to be sent.
         app.post('/webhook', (req, res) => {
 
             let payload = {

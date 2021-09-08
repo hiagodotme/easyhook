@@ -34,6 +34,7 @@ function consumeWebhook(ch) {
             'x-delayed-type': "direct"
         }
     })
+    ch.bindQueue(config.WEBHOOK_QUEUE_NAME, `${config.WEBHOOK_QUEUE_NAME}_exchange`, "webhook_out")
 
     ch.consume(config.WEBHOOK_QUEUE_NAME, async (message) => {
         let json;
@@ -41,14 +42,18 @@ function consumeWebhook(ch) {
             try {
                 json = JSON.parse(message.content.toString());
             } catch (e) {
-                console.log('Não foi possível fazer o parser do JSON, mensagem removida.')
+                if(config.SHOW_LOG === 'true')
+                    console.log('[Alert!] Your message was rejected, as this project only works with JSON messages.')
+                
                 return;
             }
 
             json._hook_control = json._hook_control || {};
             json.headers = json.headers || {};
 
-            console.log('mensagem recebida >>> ', json);
+            if(config.SHOW_LOG === 'true')
+                console.log('[Info] Received message!');
+            
 
 
             // processando requisição
@@ -68,11 +73,13 @@ function consumeWebhook(ch) {
             json._hook_control.it_retry_number++;
 
             if (json._hook_control.it_retry_number >= parseInt(config.WEBHOOK_MAX_RETRY)) {
-                console.log('[Cancelamento] Excesso de tentativas cancelada.')
+                if(config.SHOW_LOG === 'true')
+                    console.log('[Alert!] The message will be canceled for too many attempts.')
+                
                 return;
             }
 
-            // Solicitando reenvio
+            // Requesting resubmission
             ch.publish(`${config.WEBHOOK_QUEUE_NAME}_exchange`, config.WEBHOOK_QUEUE_NAME, Buffer.from(JSON.stringify(json)), {
                 headers: {
                     'x-delay': ((json._hook_control.it_retry_number * 60) * 1000)
